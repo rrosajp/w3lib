@@ -360,6 +360,20 @@ class TestGetBaseUrl:
             == "http://example.org/something"
         )
 
+    def test_get_base_url_redos(self):
+        # Regression test for https://github.com/scrapy/w3lib/issues/263:
+        # many "<base " starts with no closing ">" made _baseurl_re backtrack
+        # quadratically. Extraction must stay fast and still find a real tag.
+        prefix = "<base " * 50000
+        assert get_base_url(prefix, "http://example.com/") == "http://example.com/"
+        assert (
+            get_base_url(
+                prefix + '<base href="http://example.org/found/">',
+                "http://example.com/",
+            )
+            == "http://example.org/found/"
+        )
+
     def test_base_url_in_comment(self):
         assert get_base_url("""<!-- <base href="http://example.com/"/> -->""") == ""
         assert get_base_url("""<!-- <base href="http://example.com/"/>""") == ""
