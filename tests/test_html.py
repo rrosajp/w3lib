@@ -478,6 +478,16 @@ class TestGetMetaRefresh:
             </html>"""
         assert get_meta_refresh(body, baseurl) == (5, "http://example.org/newpage")
 
+    def test_get_meta_refresh_no_catastrophic_backtracking(self):
+        prefix = "<meta " * 80000
+        start = time.perf_counter()
+        assert get_meta_refresh(prefix) == (None, None)
+        assert get_meta_refresh(
+            prefix
+            + '<meta http-equiv="refresh" content="3; url=http://example.org/next/">'
+        ) == (3.0, "http://example.org/next/")
+        assert time.perf_counter() - start < 2
+
     def test_without_url(self):
         # refresh without url should return (None, None)
         baseurl = "http://example.org"
