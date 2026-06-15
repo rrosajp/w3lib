@@ -466,11 +466,6 @@ class TestGetMetaRefresh:
         assert get_meta_refresh(body, baseurl) == (5, "http://example.org/newpage")
 
     def test_get_meta_refresh_no_catastrophic_backtracking(self):
-        # Regression test for https://github.com/scrapy/w3lib/issues/265:
-        # many "<meta " starts with no closing ">" made _meta_tag_re backtrack
-        # quadratically (same class of bug as #263 for _baseurl_re). The time
-        # bound is deliberately generous; the fixed code runs in well under a
-        # millisecond, so a quadratic regression would blow past 2 seconds.
         prefix = "<meta " * 30000
         start = time.perf_counter()
         assert get_meta_refresh(prefix) == (None, None)
