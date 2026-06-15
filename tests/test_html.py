@@ -466,7 +466,7 @@ class TestGetMetaRefresh:
         assert get_meta_refresh(body, baseurl) == (5, "http://example.org/newpage")
 
     def test_get_meta_refresh_no_catastrophic_backtracking(self):
-        prefix = "<meta " * 30000
+        prefix = "<meta " * 80000
         start = time.perf_counter()
         assert get_meta_refresh(prefix) == (None, None)
         assert get_meta_refresh(
