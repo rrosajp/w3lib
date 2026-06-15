@@ -363,11 +363,6 @@ class TestGetBaseUrl:
         )
 
     def test_get_base_url_no_catastrophic_backtracking(self):
-        # Regression test for https://github.com/scrapy/w3lib/issues/263:
-        # many "<base " starts with no closing ">" made _baseurl_re backtrack
-        # quadratically (tens of seconds for tens of thousands of starts). The
-        # time bound is deliberately generous: the fixed code runs in well under
-        # a millisecond, so a quadratic regression would blow past 2 seconds.
         prefix = "<base " * 30000
         start = time.perf_counter()
         assert get_base_url(prefix, "http://example.com/") == "http://example.com/"
