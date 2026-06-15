@@ -23,7 +23,7 @@ _ent_re = re.compile(
 )
 _tag_re = re.compile(r"<[a-zA-Z\/!].*?>", re.DOTALL)
 _baseurl_re = re.compile(
-    r"<base\s[^>]*href\s*=\s*[\"\']\s*([^\"\'\s]+)\s*[\"\']", re.IGNORECASE
+    r"<base\s[^<>]*href\s*=\s*[\"\']\s*([^\"\'\s]+)\s*[\"\']", re.IGNORECASE
 )
 _meta_refresh_re = re.compile(
     r'<meta\s[^>]*http-equiv[^>]*refresh[^>]*content\s*=\s*(?P<quote>["\'])(?P<int>(\d*\.)?\d+)\s*;\s*url=\s*(?P<url>.*?)(?P=quote)',

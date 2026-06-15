@@ -1,3 +1,5 @@
+import time
+
 from w3lib.html import (
     get_base_url,
     get_meta_refresh,
@@ -359,6 +361,19 @@ class TestGetBaseUrl:
             get_base_url(text, baseurl.encode("ascii"))
             == "http://example.org/something"
         )
+
+    def test_get_base_url_no_catastrophic_backtracking(self):
+        prefix = "<base " * 30000
+        start = time.perf_counter()
+        assert get_base_url(prefix, "http://example.com/") == "http://example.com/"
+        assert (
+            get_base_url(
+                prefix + '<base href="http://example.org/found/">',
+                "http://example.com/",
+            )
+            == "http://example.org/found/"
+        )
+        assert time.perf_counter() - start < 2
 
     def test_base_url_in_comment(self):
         assert get_base_url("""<!-- <base href="http://example.com/"/> -->""") == ""
