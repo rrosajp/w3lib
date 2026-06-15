@@ -1,3 +1,5 @@
+import time
+
 from w3lib.html import (
     get_base_url,
     get_meta_refresh,
@@ -360,11 +362,14 @@ class TestGetBaseUrl:
             == "http://example.org/something"
         )
 
-    def test_get_base_url_redos(self):
+    def test_get_base_url_no_catastrophic_backtracking(self):
         # Regression test for https://github.com/scrapy/w3lib/issues/263:
         # many "<base " starts with no closing ">" made _baseurl_re backtrack
-        # quadratically. Extraction must stay fast and still find a real tag.
-        prefix = "<base " * 50000
+        # quadratically (tens of seconds for tens of thousands of starts). The
+        # time bound is deliberately generous: the fixed code runs in well under
+        # a millisecond, so a quadratic regression would blow past 2 seconds.
+        prefix = "<base " * 30000
+        start = time.perf_counter()
         assert get_base_url(prefix, "http://example.com/") == "http://example.com/"
         assert (
             get_base_url(
@@ -373,6 +378,7 @@ class TestGetBaseUrl:
             )
             == "http://example.org/found/"
         )
+        assert time.perf_counter() - start < 2
 
     def test_base_url_in_comment(self):
         assert get_base_url("""<!-- <base href="http://example.com/"/> -->""") == ""
