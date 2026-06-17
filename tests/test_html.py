@@ -121,6 +121,13 @@ class TestReplaceTags:
             == "Click here"
         )
 
+    def test_replace_tags_no_catastrophic_backtracking(self):
+        evil = "<a" * 50000
+        start = time.perf_counter()
+        assert replace_tags(evil) == evil  # incomplete tags (no ">") are untouched
+        assert replace_tags(evil + "<b>x</b>") == evil + "x"
+        assert time.perf_counter() - start < 2
+
 
 class TestRemoveComments:
     def test_returns_unicode(self):
@@ -213,6 +220,13 @@ class TestRemoveTags:
             )
             == ""
         )
+
+    def test_remove_tags_no_catastrophic_backtracking(self):
+        evil = "<a" * 30000
+        start = time.perf_counter()
+        assert remove_tags(evil) == evil
+        assert remove_tags(evil + "<b>x</b>") == evil + "x"
+        assert time.perf_counter() - start < 2
 
 
 class TestRemoveTagsWithContent:
