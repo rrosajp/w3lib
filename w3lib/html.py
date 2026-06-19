@@ -231,9 +231,9 @@ def remove_tags(
 def _build_remove_tags_pattern(tags_tuple: tuple[str, ...]) -> re.Pattern[str]:
     tags = "|".join(re.escape(tag) for tag in tags_tuple)
     pattern = rf"""
-        <(?P<tag>{tags})\b[^>]*>.*?</(?P=tag)>
+        <(?P<tag>{tags})\b[^<>]*>.*?</(?P=tag)>
         |
-        <(?P<tag2>{tags})\b[^>]*/>
+        <(?P<tag2>{tags})\b[^<>]*/>
     """
     return re.compile(pattern, re.IGNORECASE | re.DOTALL | re.VERBOSE)
 

@@ -277,6 +277,18 @@ class TestRemoveTagsWithContent:
             == "<span></span>"
         )
 
+    def test_no_catastrophic_backtracking(self):
+        evil = "<script " * 50000
+        start = time.perf_counter()
+        assert remove_tags_with_content(evil, which_ones=("script",)) == evil
+        assert (
+            remove_tags_with_content(
+                evil + "<script>x</script>", which_ones=("script",)
+            )
+            == evil
+        )
+        assert time.perf_counter() - start < 2
+
 
 class TestReplaceEscapeChars:
     def test_returns_unicode(self):
