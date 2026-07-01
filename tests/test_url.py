@@ -1432,6 +1432,15 @@ class TestCanonicalizeUrl:
             == "http://user:pass@www.example.com/do?a=1#frag"
         )
 
+    def test_remove_fragments_ipv6_host(self):
+        # The fragment delimiter must still be detected when the netloc is a
+        # bracketed IPv6 literal and the URL also has a query string.
+        assert canonicalize_url("http://[::1]/do?a=1#frag") == "http://[::1]/do?a=1"
+        assert (
+            canonicalize_url("http://[::1]/do?a=1#frag", keep_fragments=True)
+            == "http://[::1]/do?a=1#frag"
+        )
+
     def test_dont_convert_safe_characters(self):
         # dont convert safe characters to percent encoding representation
         assert (
